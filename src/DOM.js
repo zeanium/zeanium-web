@@ -96,16 +96,25 @@
                 this._roots = [];
             },
             createRootElement: function (tag, attrs){
+                var _dom = this.createElement(tag, attrs, document.body);
+
+                return this._roots.push(_dom), _dom;
+            },
+            createElement: function (tag, attrs, parent){
                 var _tag = tag || 'div',
                     _attrs = attrs || {},
                     _dom = document.createElement(_tag);
+
                 for(var attr in _attrs){
                     _dom.setAttribute(attr, _attrs[attr]);
                 }
-    			document.body.appendChild(_dom);
 
-                return this._roots.push(_dom), _dom;
-    		},
+                if(parent) {
+                    parent.appendChild(_dom);
+                }
+
+                return _dom;
+            },
     		removeAllRoots: function (){
     			this._roots.forEach(function (dom){
     				document.body.removeChild(dom);
