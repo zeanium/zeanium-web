@@ -9,13 +9,13 @@ gulp.task('uglify', function(){
 });
 
 gulp.task('concat', gulp.series('uglify', function () {
-	return gulp.src(['src/Cookie.js', 'src/DOM.js', 'src/Http.js', 'src/Store.js'])
+	return gulp.src(['src/Cookie.js', 'src/DOM.js', 'src/Draggable.js', 'src/Http.js', 'src/Store.js'])
 		.pipe(concat('zn.web.js'))
 		.pipe(gulp.dest('dist/'));
 }));
 
 gulp.task('concat-minx', gulp.series('uglify', function () {
-	return gulp.src(['dist/minx/Cookie.js', 'dist/minx/DOM.js', 'dist/minx/Http.js', 'dist/minx/Store.js'])
+	return gulp.src(['dist/minx/Cookie.js', 'dist/minx/DOM.js', 'dist/minx/Draggable.js', 'dist/minx/Http.js', 'dist/minx/Store.js'])
 		.pipe(concat('zn.web.minx.js'))
 		.pipe(gulp.dest('dist/'));
 }));
