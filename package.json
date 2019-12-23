@@ -28,6 +28,6 @@
     "gulp-uglify": "^3.0.2"
   },
   "dependencies": {
-    "@zeanium/core": "^1.0.0"
+    "@zeanium/core": "^1.0.5"
   }
 }
