@@ -33,18 +33,45 @@
 (function (zn) {
 
     var ZNData = zn.Class({
-        events: ['before', 'convert', 'data', 'error', 'after'],
+        events: ['before', 'array', 'object', 'convert', 'data', 'error', 'after'],
         properties: {
+            zncaller: null,
             argv: null,
+            context: null,
             data: null
         },
         methods: {
-            init: function (argv, events){
+            init: function (argv, events, context){
+                var _argv = argv || {},
+                    _auto = _argv.auto;
+                if(_auto == null){
+                    _auto = true;
+                }
                 this._argv = argv;
-                this.__init(argv);
+                this._context = context;
+                this._zncaller = argv.zncaller;
+                this.__initEvents(events);
+                if(_auto) {
+                    this.__init(argv);
+                }
             },
             refresh: function (){
-                this.__init(this._argv);
+                return this.__init(this._argv), this;
+            },
+            recall: function (){
+                return this.refresh(), this;
+            },
+            call: function (argv){
+                return this.__init(argv), this;
+            },
+            __initEvents: function (events){
+                if(events){
+                    for(var event in events){
+                        this.on(event, events[event], this);
+                    }
+                }
+
+                return this;
             },
             __init: function (data){
                 var _type = Object.prototype.toString.call(data);
@@ -63,12 +90,13 @@
             },
             __object: function (data){
                 this.fire('object', data);
-                if(!zn.data.caller){
-                    throw new Error('zn.data.caller is null');
+                var _zncaller = this._zncaller || zn.data.zncaller;
+                if(!_zncaller){
+                    throw new Error('zncaller is null');
                 }
 
-                zn.data.caller.call(data, zn.data.caller).then(function (value){
-                    this.fire('after', this.__dataConvert(value));
+                _zncaller.call(data, this._context || _zncaller).then(function (value, xhr){
+                    this.fire('after', this.__dataConvert(value), xhr);
                 }.bind(this), function (xhr){
                     this.fire('error', xhr);
                 }.bind(this));
@@ -90,11 +118,11 @@
     zn.data = zn.Class({
         static: true,
         properties: {
-            caller: null
+            zncaller: null
         },
         methods: {
-            create: function (argv){
-                return new ZNData(argv);
+            create: function (argv, events, context){
+                return new ZNData(argv, events, context);
             },
             settings: function (settings){
                 return this.sets(settings), this;
