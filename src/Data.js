@@ -15,12 +15,16 @@
                 if(_auto == null){
                     _auto = true;
                 }
-                this._argv = argv;
+                this._argv = _argv;
                 this._context = context;
-                this._zncaller = argv.zncaller;
                 this.__initEvents(events);
+
+                if(zn.is(_argv, 'object')){
+                    this._zncaller = _argv.zncaller;
+                }
+
                 if(_auto) {
-                    this.__init(argv);
+                    this.__init(_argv);
                 }
             },
             refresh: function (){
@@ -31,6 +35,21 @@
             },
             call: function (argv){
                 return this.__init(argv), this;
+            },
+            overwriteCall: function (argv, events, context){
+                if(argv){
+                    this._argv = argv;
+                    if(context){
+                        this._context = context;
+                    }
+                    if(events){
+                        this.__initEvents(events);
+                    }
+                    
+                    this.__init(this._argv);
+                }
+                
+                return this;
             },
             __initEvents: function (events){
                 if(events){
