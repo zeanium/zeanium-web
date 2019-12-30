@@ -59,8 +59,8 @@
                     this.__init(_argv);
                 }
             },
-            refresh: function (){
-                return this.__init(this._argv), this;
+            refresh: function (argv, events, context){
+                return this.overwriteCall(argv || this._argv, events, context), this;
             },
             recall: function (){
                 return this.refresh(), this;
@@ -96,8 +96,12 @@
                 var _type = Object.prototype.toString.call(data);
                 this.fire('before', data);
                 if(_type == '[object Array]') {
+                    data.owner = this;
+                    data.refresh = data.owner.refresh;
                     this.__array(data);
                 }else if(_type == '[object Object]'){
+                    data.owner = this;
+                    data.refresh = data.owner.refresh;
                     this.__object(data);
                 }else{
                     this.fire('error', data);
