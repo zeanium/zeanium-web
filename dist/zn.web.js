@@ -83,6 +83,24 @@
                 
                 return this;
             },
+            extendArgv: function (){
+                if(arguments.length == 1) {
+                    zn.extend(this._argv, arguments[0]);
+                } else if(arguments.length == 2 && this._argv[arguments[0]]) {
+                    zn.extend(this._argv[arguments[0]], arguments[1]);
+                }
+
+                return this;
+            },
+            overwriteArgv: function (){
+                if(arguments.length == 1) {
+                    zn.overwrite(this._argv, arguments[0]);
+                } else if(arguments.length == 2 && this._argv[arguments[0]]) {
+                    zn.overwrite(this._argv[arguments[0]], arguments[1]);
+                }
+                
+                return this;
+            },
             __initEvents: function (events){
                 if(events){
                     for(var event in events){
