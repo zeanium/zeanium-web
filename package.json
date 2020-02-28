@@ -1,6 +1,6 @@
 {
   "name": "@zeanium/web",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "zeanium for web",
   "main": "./dist/zn.web.minx.js",
   "directories": {
@@ -28,6 +28,6 @@
     "gulp-uglify": "^3.0.2"
   },
   "dependencies": {
-    "@zeanium/core": "^1.0.5"
+    "@zeanium/core": "latest"
   }
 }

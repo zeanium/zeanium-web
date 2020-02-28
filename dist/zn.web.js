@@ -114,12 +114,12 @@
                 var _type = Object.prototype.toString.call(data);
                 this.fire('before', data);
                 if(_type == '[object Array]') {
-                    data.owner = this;
-                    data.refresh = data.owner.refresh;
+                    data.prototype.owner = this;
+                    data.prototype.refresh = this.refresh;
                     this.__array(data);
                 }else if(_type == '[object Object]'){
-                    data.owner = this;
-                    data.refresh = data.owner.refresh;
+                    data.prototype.owner = this;
+                    data.prototype.refresh = this.refresh;
                     this.__object(data);
                 }else{
                     this.fire('error', data);
