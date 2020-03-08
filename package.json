@@ -1,8 +1,8 @@
 {
   "name": "@zeanium/web",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "description": "zeanium for web",
-  "main": "./dist/zn.web.minx.js",
+  "main": "index.js",
   "directories": {
     "test": "test"
   },
