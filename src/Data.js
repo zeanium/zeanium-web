@@ -3,7 +3,7 @@
     var ZNData = zn.Class({
         events: ['before', 'array', 'object', 'convert', 'data', 'error', 'after'],
         properties: {
-            caller: null,
+            zncaller: null,
             argv: null,
             context: null,
             data: null
@@ -20,7 +20,7 @@
                 this.__initEvents(events);
 
                 if(zn.is(_argv, 'object')){
-                    this._caller = _argv.caller;
+                    this._zncaller = _argv.zncaller;
                 }
 
                 if(_auto) {
@@ -99,12 +99,17 @@
             },
             __object: function (data){
                 this.fire('object', data);
-                var _caller = this._caller || zn.data.caller;
-                if(!_caller){
-                    throw new Error('ZNData caller is null.');
+                var _zncaller = this._zncaller || zn.data.zncaller;
+                if(!_zncaller){
+                    throw new Error('ZNData zncaller is null.');
                 }
-
-                _caller.call(data, this._context || _caller)
+                if(data.url){
+                    data.url = zn.data.resolveURL(data.url);
+                }else{
+                    throw new Error('ZNData data.url is exist.');
+                }
+                
+                _zncaller.call(data, this._context || _zncaller)
                     .then(function (value, xhr){
                         this.fire('after', this.__dataConvert(value), xhr);
                     }.bind(this), function (xhr){
@@ -128,13 +133,13 @@
     zn.data = zn.Class({
         static: true,
         properties: {
-            caller: null,
+            zncaller: null,
             host: null,
             port: null
         },
         methods: {
             init: function (){
-                this.caller = null;
+                this.zncaller = null;
                 this.host = window.location.origin;
                 this.port = null;
             },
@@ -147,8 +152,8 @@
             setHost: function (host, port){
                 return this.host = host, this.port = port, this;
             },
-            setCaller: function (caller){
-                return this.caller = caller, this;
+            setCaller: function (zncaller){
+                return this.zncaller = zncaller, this;
             },
             getBaseURL: function (host, port){
                 var _host = host || this.host,
@@ -159,7 +164,7 @@
                     return _host;
                 }
             },
-            fixURL: function (url, host, port) {
+            resolveURL: function (url, host, port) {
                 var _url = url || '';
                 if(_url.indexOf('http://') == -1 && _url.indexOf('https://') == -1){
                     _url = this.getBaseURL(host, port) + _url;
