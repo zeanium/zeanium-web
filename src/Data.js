@@ -3,7 +3,7 @@
     var ZNData = zn.Class({
         events: ['before', 'array', 'object', 'convert', 'data', 'error', 'after'],
         properties: {
-            zncaller: null,
+            caller: null,
             argv: null,
             context: null,
             data: null
@@ -20,7 +20,7 @@
                 this.__initEvents(events);
 
                 if(zn.is(_argv, 'object')){
-                    this._zncaller = _argv.zncaller;
+                    this._caller = _argv.caller;
                 }
 
                 if(_auto) {
@@ -99,16 +99,17 @@
             },
             __object: function (data){
                 this.fire('object', data);
-                var _zncaller = this._zncaller || zn.data.zncaller;
-                if(!_zncaller){
-                    throw new Error('zncaller is null');
+                var _caller = this._caller || zn.data.caller;
+                if(!_caller){
+                    throw new Error('ZNData caller is null.');
                 }
 
-                _zncaller.call(data, this._context || _zncaller).then(function (value, xhr){
-                    this.fire('after', this.__dataConvert(value), xhr);
-                }.bind(this), function (xhr){
-                    this.fire('error', xhr);
-                }.bind(this));
+                _caller.call(data, this._context || _caller)
+                    .then(function (value, xhr){
+                        this.fire('after', this.__dataConvert(value), xhr);
+                    }.bind(this), function (xhr){
+                        this.fire('error', xhr);
+                    }.bind(this));
             },
             __dataConvert: function (data){
                 var _return = this.fire('convert', data);
@@ -127,14 +128,44 @@
     zn.data = zn.Class({
         static: true,
         properties: {
-            zncaller: null
+            caller: null,
+            host: null,
+            port: null
         },
         methods: {
+            init: function (){
+                this.caller = null;
+                this.host = window.location.origin;
+                this.port = null;
+            },
             create: function (argv, events, context){
                 return new ZNData(argv, events, context);
             },
-            settings: function (settings){
-                return this.sets(settings), this;
+            setting: function (setting){
+                return this.sets(setting), this;
+            },
+            setHost: function (host, port){
+                return this.host = host, this.port = port, this;
+            },
+            setCaller: function (caller){
+                return this.caller = caller, this;
+            },
+            getBaseURL: function (host, port){
+                var _host = host || this.host,
+                    _port = port || this.port;
+                if(_port){
+                    return _host.split(':')[0] + _port;
+                }else {
+                    return _host;
+                }
+            },
+            fixURL: function (url, host, port) {
+                var _url = url || '';
+                if(_url.indexOf('http://') == -1 && _url.indexOf('https://') == -1){
+                    _url = this.getBaseURL(host, port) + _url;
+                }
+
+                return _url;
             }
         }
     });
