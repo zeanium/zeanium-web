@@ -171,6 +171,45 @@
                 }
 
                 return _url;
+            },
+            request: function (argv){
+                if(!argv || !argv.url) {
+                    throw new ReferenceError('zn.data.request() argv or argv.url is null.');
+                }
+
+                if(!this.zncaller) {
+                    throw new ReferenceError('zn.data.zncaller is null.');
+                }
+
+                if(typeof this.zncaller != 'function'){
+                    throw new ReferenceError('zn.data.zncaller is not "function" type.'); 
+                }
+
+                return argv.url = this.resolveURL(argv.url), this.zncaller(argv);
+            },
+            get: function (url, options){
+                return this.request(zn.deepAssigns({
+                    url: url,
+                    method: 'get'
+                }, options));
+            },
+            post: function (url, options){
+                return this.request(zn.deepAssigns({
+                    url: url,
+                    method: 'post'
+                }, options));
+            },
+            delete: function (url, options){
+                return this.request(zn.deepAssigns({
+                    url: url,
+                    method: 'delete'
+                }, options));
+            },
+            put: function (url, options){
+                return this.request(zn.deepAssigns({
+                    url: url,
+                    method: 'put'
+                }, options));
             }
         }
     });
