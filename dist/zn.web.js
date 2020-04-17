@@ -114,12 +114,8 @@
                 var _type = Object.prototype.toString.call(data);
                 this.fire('before', data);
                 if(_type == '[object Array]') {
-                    data.__proto__.owner = this;
-                    data.__proto__.refresh = this.refresh;
                     this.__array(data);
                 }else if(_type == '[object Object]'){
-                    data.__proto__.owner = this;
-                    data.__proto__.refresh = this.refresh;
                     this.__object(data);
                 }else{
                     this.fire('error', data);
@@ -141,12 +137,11 @@
                     throw new Error('ZNData data.url is exist.');
                 }
                 
-                _zncaller.call(data, this._context || _zncaller)
-                    .then(function (value, xhr){
-                        this.fire('after', this.__dataConvert(value), xhr);
-                    }.bind(this), function (xhr){
-                        this.fire('error', xhr);
-                    }.bind(this));
+                _zncaller(data).then(function (value, xhr){
+                    this.fire('after', this.__dataConvert(value), xhr);
+                }.bind(this), function (xhr){
+                    this.fire('error', xhr);
+                }.bind(this));
             },
             __dataConvert: function (data){
                 var _return = this.fire('convert', data);
