@@ -30,8 +30,8 @@
             refresh: function (argv, events, context){
                 return this.overwriteCall(argv || this._argv, events, context), this;
             },
-            recall: function (){
-                return this.refresh(), this;
+            recall: function (argv, events, context){
+                return this.refresh(argv, events, context), this;
             },
             call: function (argv){
                 return this.__init(argv), this;
