@@ -105,8 +105,14 @@
                     throw new Error('ZNData data.url is exist.');
                 }
                 
-                _zncaller(data).then(function (value, xhr){
-                    this.fire('after', this.__dataConvert(value), xhr);
+                _zncaller(data).then(function (response, xhr){
+                    var _data = response.data;
+                    if(zn.data.responseHandler && typeof zn.data.responseHandler == 'function'){
+                        if(zn.data.responseHandler(response, xhr)){
+                            _data = _return;
+                        }
+                    }
+                    this.fire('after', this.__dataConvert(_data), response, xhr);
                 }.bind(this), function (xhr){
                     this.fire('error', xhr);
                 }.bind(this));
@@ -130,7 +136,8 @@
         properties: {
             zncaller: null,
             host: null,
-            port: null
+            port: null,
+            responseHandler: null
         },
         methods: {
             init: function (){
