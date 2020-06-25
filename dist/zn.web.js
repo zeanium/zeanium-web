@@ -33,7 +33,7 @@
 (function (zn) {
 
     var ZNData = zn.Class({
-        events: ['before', 'array', 'object', 'convert', 'data', 'error', 'after'],
+        events: ['before', 'array', 'object', 'convert', 'success', 'error', 'after'],
         properties: {
             zncaller: null,
             argv: null,
@@ -144,21 +144,29 @@
                             _data = _return;
                         }
                     }
-                    this.fire('after', this.__dataConvert(_data), response, xhr);
+
+                    this.fire('after', this.__dataConvert(_data, xhr), response, xhr);
                 }.bind(this), function (xhr){
                     this.fire('error', xhr);
                 }.bind(this));
             },
-            __dataConvert: function (data){
-                var _return = this.fire('convert', data);
+            __dataConvert: function (data, xhr){
+                var _return = this.fire('convert', data, xhr);
                 if(_return !== undefined && _return !== null){
                     return _return;
                 }
 
-                var _data = data.result || data;
-                this._data = this.fire('data', _data) || _data;
+                if(data.result && data.code && data.message) {
+                    if(data.code == 200){
+                        this.fire('success', data.result, xhr);
+                    }else{
+                        xhr.message = data.message + ', ' + data.result;
+                        this.fire('error', xhr);
+                    }
+                    return data.result;
+                }
 
-                return this._data;
+                return this.fire('success', data, xhr), data;
             }
         }
     });
