@@ -1,6 +1,6 @@
 {
   "name": "@zeanium/web",
-  "version": "1.0.18",
+  "version": "1.0.19",
   "description": "zeanium for web",
   "main": "index.js",
   "directories": {

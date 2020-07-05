@@ -145,28 +145,27 @@
                         }
                     }
 
-                    this.fire('after', this.__dataConvert(_data, xhr), response, xhr);
+                    this.fire('after', this.__dataConvert(_data), response, xhr);
                 }.bind(this), function (xhr){
                     this.fire('error', xhr);
                 }.bind(this));
             },
-            __dataConvert: function (data, xhr){
-                var _return = this.fire('convert', data, xhr);
+            __dataConvert: function (data){
+                var _return = this.fire('convert', data);
                 if(_return !== undefined && _return !== null){
                     return _return;
                 }
 
                 if(data.result && data.code && data.message) {
                     if(data.code == 200){
-                        this.fire('success', data.result, xhr);
+                        this.fire('success', data.result);
                     }else{
-                        xhr.message = data.message + ', ' + data.result;
-                        this.fire('error', xhr);
+                        this.fire('error', data);
                     }
                     return data.result;
                 }
 
-                return this.fire('success', data, xhr), data;
+                return this.fire('success', data), data;
             }
         }
     });
