@@ -12,7 +12,7 @@
      */
     function typeColor(type) {
         type = type || '';
-        let color = '';       
+        var color = '';       
         switch (type) {
             case 'primary': color = '#2d8cf0'; break; //蓝
             case 'success': color = '#19be6b'; break; //绿
@@ -30,7 +30,7 @@
     * @param {String} info - info text
     * @param {String} type - style
     */
-    console.capsule = function (title, info, type = 'primary', ...args) {
+    console.capsule = function (title, info, type, ...args) {
         //Js字符串拼接 ${ }
         console.log(
             `%c ${title} %c ${info} %c`,

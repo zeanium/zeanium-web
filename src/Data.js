@@ -69,6 +69,25 @@
                 
                 return this;
             },
+            setArgv: function (key, value){
+                return this._argv[key] = value, this;
+            },
+            getArgv: function (key){
+                if(key){
+                    return this._argv[key];
+                }else{
+                    return this._argv;
+                }
+            },
+            deepAssignArgv: function (){
+                if(arguments.length == 1) {
+                    zn.deepAssign(this._argv, arguments[0]);
+                } else if(arguments.length == 2 && this._argv[arguments[0]]) {
+                    zn.deepAssign(this._argv[arguments[0]], arguments[1]);
+                }
+                
+                return this;
+            },
             __initEvents: function (events){
                 if(events){
                     for(var event in events){
@@ -106,31 +125,27 @@
                 }
                 
                 _zncaller(data).then(function (response, xhr){
-                    var _data = response.data;
+                    var _data = response;
                     if(zn.data.responseHandler && typeof zn.data.responseHandler == 'function'){
-                        if(zn.data.responseHandler(response, xhr)){
+                        var _return = zn.data.responseHandler(response, xhr);
+                        if(_return && _return !== true){
                             _data = _return;
                         }
                     }
 
                     this.fire('after', this.__dataConvert(_data), response, xhr);
-                }.bind(this), function (xhr){
-                    this.fire('error', xhr);
+                }.bind(this)).catch(function (error){
+                    this.fire('error', error);
                 }.bind(this));
             },
             __dataConvert: function (data){
                 var _return = this.fire('convert', data);
-                if(_return !== undefined && _return !== null){
-                    return _return;
+                if(_return === false){
+                    return false;
                 }
-
-                if(data.result && data.code && data.message) {
-                    if(data.code == 200){
-                        this.fire('success', data.result);
-                    }else{
-                        this.fire('error', data);
-                    }
-                    return data.result;
+                
+                if(_return !== undefined && _return !== null){
+                    data = _return;
                 }
 
                 return this.fire('success', data), data;
