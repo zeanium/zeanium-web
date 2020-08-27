@@ -1,5 +1,38 @@
 (function (zn) {
 
+    zn.setting = zn.Class({
+        static: true,
+        properties: {
+            
+        },
+        methods: {
+            init: function (){
+                this._data_ = {};
+            },
+            data: function (data) {
+                return zn.deepAssigns(this._data_, data), this;
+            },
+            getKey: function (key) {
+                return this._data_[key];
+            },
+            setKey: function (key, value) {
+                return this._data_[key] = value, this;
+            },
+            setValue: function (namespace, value){
+                return zn.path(this._data_, namespace, value), this;
+            },
+            getValue: function (namespace){
+                return zn.path(this._data_, namespace);
+            },
+            path: function (path) {
+                return zn.path(this._data_, path);
+            }
+        }
+    });
+
+})(zn);
+(function (zn) {
+
     zn.cookie = zn.Class({
         static: true,
         methods: {
@@ -198,12 +231,16 @@
                 this.zncaller = null;
                 this.host = window.location.origin;
                 this.port = null;
+                this._setting_ = {};
             },
             create: function (argv, events, context){
                 return new ZNData(argv, events, context);
             },
             setting: function (setting){
-                return this.sets(setting), this;
+                return zn.deepAssigns(this._setting_, setting), this;
+            },
+            settingPath: function (path, value){
+                return zn.path(this._setting_, path, value), this;
             },
             setHost: function (host, port){
                 return this.host = host, this.port = port, this;
@@ -212,7 +249,7 @@
                 return this.zncaller = zncaller, this;
             },
             getBaseURL: function (host, port){
-                var _host = host || this.host,
+                var _host = host || this.host || zn.setting.getKey('host'),
                     _port = port || this.port;
                 if(_port){
                     return _host.split(':')[0] + _port;

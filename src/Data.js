@@ -166,12 +166,16 @@
                 this.zncaller = null;
                 this.host = window.location.origin;
                 this.port = null;
+                this._setting_ = {};
             },
             create: function (argv, events, context){
                 return new ZNData(argv, events, context);
             },
             setting: function (setting){
-                return this.sets(setting), this;
+                return zn.deepAssigns(this._setting_, setting), this;
+            },
+            settingPath: function (path, value){
+                return zn.path(this._setting_, path, value), this;
             },
             setHost: function (host, port){
                 return this.host = host, this.port = port, this;
@@ -180,7 +184,7 @@
                 return this.zncaller = zncaller, this;
             },
             getBaseURL: function (host, port){
-                var _host = host || this.host,
+                var _host = host || this.host || zn.setting.getKey('host'),
                     _port = port || this.port;
                 if(_port){
                     return _host.split(':')[0] + _port;
