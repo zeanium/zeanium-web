@@ -2,9 +2,6 @@
 
     zn.setting = zn.Class({
         static: true,
-        properties: {
-            
-        },
         methods: {
             init: function (){
                 this._data_ = {};
@@ -13,19 +10,63 @@
                 return zn.deepAssigns(this._data_, data), this;
             },
             getKey: function (key) {
-                return this._data_[key];
+                return this.path(key);
             },
             setKey: function (key, value) {
-                return this._data_[key] = value, this;
-            },
-            setValue: function (namespace, value){
-                return zn.path(this._data_, namespace, value), this;
+                return this.setPath(key, value);
             },
             getValue: function (namespace){
-                return zn.path(this._data_, namespace);
+                return this.path(namespace);
+            },
+            setValue: function (namespace, value){
+                return this.setPath(namespace, value);
+            },
+            isVarValue: function (value){
+                if(typeof value == 'string'){
+                    return value.indexOf('{{') === 0 && value.indexOf('}}') === (value.length - 2);
+                }
+
+                return false;
+            },
+            getVarValue: function (value){
+                if(typeof value == 'string' && value.length > 4){
+                    return this.path(value.substring(2, value.length - 2));
+                }
+                return value;
+            },
+            realizeValue: function (value) {
+                switch(zn.type(value)) {
+                    case 'object':
+                        for(var key in value) {
+                            value[key] = this.realizeValue(value[key]);
+                        }
+                        break;
+                    case 'string':
+                        if(this.isVarValue(value)) {
+                            value = this.getVarValue(value);
+                        }
+                    case 'array':
+                        for(var i =0, _len = value.length; i++; i < _len) {
+                            value[i] = this.realizeValue(value[key]);
+                        }
+                        break;
+                }
+
+                return value;
             },
             path: function (path) {
-                return zn.path(this._data_, path);
+                var _value = zn.path(this._data_, path);
+                if(this.isVarValue(_value)){
+                    _value = this.getVarValue(_value);
+                }
+
+                return this.realizeValue(_value);
+            },
+            setPath: function (path, value){
+                return zn.path(this._data_, path, this.realizeValue(value)), this;
+            },
+            keys: function (){
+                return Object.keys(this._data_);
             }
         }
     });
@@ -231,16 +272,9 @@
                 this.zncaller = null;
                 this.host = window.location.origin;
                 this.port = null;
-                this._setting_ = {};
             },
             create: function (argv, events, context){
                 return new ZNData(argv, events, context);
-            },
-            setting: function (setting){
-                return zn.deepAssigns(this._setting_, setting), this;
-            },
-            settingPath: function (path, value){
-                return zn.path(this._setting_, path, value), this;
             },
             setHost: function (host, port){
                 return this.host = host, this.port = port, this;
@@ -249,10 +283,10 @@
                 return this.zncaller = zncaller, this;
             },
             getBaseURL: function (host, port){
-                var _host = host || this.host || zn.setting.getKey('host'),
-                    _port = port || this.port;
+                var _host = host || zn.setting.path('zn.data.host') || this.host,
+                    _port = port || zn.setting.path('zn.data.port') || this.port;
                 if(_port){
-                    return _host.split(':')[0] + _port;
+                    return _host + _port;
                 }else {
                     return _host;
                 }
