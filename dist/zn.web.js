@@ -7,7 +7,16 @@
                 this._data_ = {};
             },
             data: function (data) {
-                return zn.deepAssigns(this._data_, data), this;
+                if(data){
+                    for(var key in data){
+                        zn.path(this._data_, key, data[key]);
+                    }
+                }
+
+                return this;
+            },
+            deepAssign: function (path, value){
+                return zn.path(this._data_, path, zn.deepAssign(zn.path(this._data_, path), value)), this;
             },
             getKey: function (key) {
                 return this.path(key);
@@ -53,6 +62,18 @@
                 }
 
                 return value;
+            },
+            getPathRoot: function (uses, unuses, context){
+                if(unuses && unuses.length){
+                    var _key = unuses.shift();
+                    uses.push(_key);
+                    var _value = zn.path(context, uses.join('.'));
+                    if(_value){
+                        return 
+                    }else{
+                        return this.getPathRoot(uses, unuses, context);
+                    }
+                }
             },
             path: function (path) {
                 var _value = zn.path(this._data_, path);
