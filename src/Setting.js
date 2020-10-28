@@ -54,6 +54,7 @@
                         if(this.isVarValue(value)) {
                             value = this.getVarValue(value);
                         }
+                        break;
                     case 'array':
                         for(var i =0, _len = value.length; i++; i < _len) {
                             value[i] = this.realizeValue(value[key]);
