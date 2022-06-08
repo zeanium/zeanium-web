@@ -188,7 +188,10 @@
             resolveURL: function (url, host, port) {
                 var _url = url || '';
                 if(_url.indexOf('http://') == -1 && _url.indexOf('https://') == -1){
-                    _url = this.getBaseURL(host, port) + _url;
+                    var _base_url = this.getBaseURL(host, port);
+                    if(_url.indexOf(_base_url) == -1 || _url.indexOf(_base_url) !=0){
+                        _url =  + _url;
+                    }
                 }
 
                 return _url;
