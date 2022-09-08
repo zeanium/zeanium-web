@@ -177,8 +177,8 @@
                 return this.zncaller = zncaller, this;
             },
             getBaseURL: function (host, port){
-                var _host = host || zn.setting.path('zn.data.host') || this.host,
-                    _port = port || zn.setting.path('zn.data.port') || this.port;
+                var _host = host || zn.data.host || this.host,
+                    _port = port || zn.data.port || this.port;
                 if(_port){
                     return _host + _port;
                 }else {
@@ -190,7 +190,7 @@
                 if(_url.indexOf('http://') == -1 && _url.indexOf('https://') == -1){
                     var _base_url = this.getBaseURL(host, port);
                     if(_url.indexOf(_base_url) == -1 || _url.indexOf(_base_url) !=0){
-                        _url =  + _url;
+                        _url = _base_url + _url;
                     }
                 }
 
